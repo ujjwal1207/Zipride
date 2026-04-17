@@ -1,4 +1,4 @@
-# YATURIDES- Ride Booking Platform 
+# ZIPRIDE- Ride Booking Platform 
 
 A modern, real-time ride booking application built with the MERN stack (MongoDB, Express, React, Node.js), Vite, Socket.IO, and Google Maps.
 
