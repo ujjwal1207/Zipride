@@ -45,18 +45,18 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="p-7 h-screen flex flex-col justify-center items-center bg-gray-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+    <div className="p-7 h-screen flex flex-col justify-center items-center bg-gray-100">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
         <img
           className="w-16 mb-6 mx-auto"
-          src="/zipride captain.png"
-          alt="Logo"
+          src={isCaptain ? "/zipride captain.png" : "/zipride user.png"}
+          alt="Zipride"
         />
         <h2 className="text-2xl font-bold text-center mb-2">Forgot Password</h2>
         <p className="text-center text-gray-600 mb-6">Reset password for your {userType} account.</p>
 
-        {message && <div className="bg-green-100 text-green-700 p-3 rounded mb-4 text-center">{message}</div>}
-        {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">{error}</div>}
+        {message && <div className="bg-green-100 text-green-700 p-3 rounded-xl mb-4 text-center text-sm">{message}</div>}
+        {error && <div className="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-center text-sm">{error}</div>}
 
         {step === 'email' ? (
           <form onSubmit={handleEmailSubmit}>
@@ -67,12 +67,12 @@ function ForgotPassword() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-100 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 placeholder="email@example.com"
                 required
               />
             </div>
-            <button type="submit" className="w-full bg-blue-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-blue-700 transition-colors">
+            <button type="submit" className="w-full bg-black text-white font-semibold rounded-xl px-4 py-3 text-base hover:bg-gray-800 transition-colors">
               Send Reset OTP
             </button>
           </form>
@@ -85,7 +85,7 @@ function ForgotPassword() {
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-100 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 placeholder="6-digit OTP"
                 required
               />
@@ -97,18 +97,18 @@ function ForgotPassword() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-100 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-green-500 transition"
                 placeholder="New Password"
                 required
               />
             </div>
-            <button type="submit" className="w-full bg-green-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-green-700 transition-colors">
+            <button type="submit" className="w-full bg-green-600 text-white font-semibold rounded-xl px-4 py-3 text-base hover:bg-green-700 transition-colors">
               Reset Password
             </button>
           </form>
         )}
         <div className="text-center mt-6">
-          <Link to={loginRoute} className="text-blue-600 hover:underline">
+          <Link to={loginRoute} className="text-black font-medium hover:underline">
             Back to Login
           </Link>
         </div>

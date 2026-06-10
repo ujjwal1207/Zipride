@@ -38,49 +38,36 @@ const Captainlogin = () => {
   return (
     <div className="p-7 h-screen flex flex-col justify-between">
       <div>
-        <img
-          className="w-20 mb-3"
-          src="/zipride captain.png"
-          alt=""
-        />
+        <img className="w-20 mb-6" src="/zipride captain.png" alt="Zipride Captain" />
 
-        <form
-          onSubmit={(e) => {
-            submitHandler(e);
-          }}
-        >
-          <h3 className="text-lg font-medium mb-2">What's your email</h3>
+        <form onSubmit={(e) => submitHandler(e)}>
+          <h3 className="text-base font-medium mb-2">What's your email</h3>
           <input
             required
             value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
+            onChange={(e) => setEmail(e.target.value)}
+            className="bg-gray-100 mb-6 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
             type="email"
             placeholder="email@example.com"
           />
 
-          <h3 className="text-lg font-medium mb-2">Enter Password</h3>
-
+          <h3 className="text-base font-medium mb-2">Enter Password</h3>
           <input
-            className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
+            className="bg-gray-100 mb-6 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
             value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
+            onChange={(e) => setPassword(e.target.value)}
             required
             type="password"
             placeholder="password"
           />
 
-          <button className="bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base">
+          <button className="bg-black text-white font-semibold mb-3 rounded-xl px-4 py-3 w-full text-base hover:bg-gray-800 transition-colors">
             Login
           </button>
         </form>
-        <p className="text-center">
+        <p className="text-center text-gray-600">
           Join a fleet?{" "}
-          <Link to="/captain-signup" className="text-blue-600">
+          <Link to="/captain-signup" className="text-black font-medium hover:underline">
             Register as a Captain
           </Link>
         </p>
@@ -88,7 +75,7 @@ const Captainlogin = () => {
       <div>
         <Link
           to="/login"
-          className="bg-[#d5622d] flex items-center justify-center text-white font-semibold mb-5 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base"
+          className="bg-black flex items-center justify-center text-white font-semibold mb-5 rounded-xl px-4 py-3 w-full text-base hover:bg-gray-800 transition-colors"
         >
           Sign in as User
         </Link>

@@ -7,7 +7,7 @@ function VehiclePanel(props) {
 
   return (
     <div>
-      <h3 className="text-2xl semibold mb-5">Choose a vehicle</h3>
+      <h3 className="text-2xl font-semibold mb-5">Choose a vehicle</h3>
       <div
         onClick={() => {
           props.selectVehicleType('car')
@@ -18,14 +18,14 @@ function VehiclePanel(props) {
       >
         <img
           className="h-20"
-          src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_638,w_851/v1707429809/assets/2a/9fe873-1f16-4c89-ba41-2712211380a9/original/UberBlack.png"
+          src={`${import.meta.env.VITE_BASE}/uploads/car.webp`}
           alt=""
         />
         <div className="ml-1 w-1/2">
           <h4 className="font-medium text-lg">
             ZipzapGo
-              <span>
-                <i className="ri-user-3-fill"></i> 4
+            <span className="ml-2 text-sm text-gray-600">
+              <i className="ri-user-3-fill"></i> 4
             </span>
           </h4>
           <h5 className="font-medium text-sm">2 mins away </h5>
@@ -45,13 +45,13 @@ function VehiclePanel(props) {
       >
         <img
           className="h-20"
-          src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png"
+          src={`${import.meta.env.VITE_BASE}/uploads/bike.webp`}
           alt=""
         />
         <div className="ml-1 w-1/2">
           <h4 className="font-medium text-lg">
-            Zipbike 
-            <span>
+            Zipbike
+            <span className="ml-2 text-sm text-gray-600">
               <i className="ri-user-3-fill"></i> 2
             </span>
           </h4>
@@ -72,13 +72,13 @@ function VehiclePanel(props) {
       >
         <img
           className="h-20"
-          src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png"
+          src={`${import.meta.env.VITE_BASE}/uploads/auto.webp`}
           alt=""
         />
         <div className="ml-1 w-1/2">
           <h4 className="font-medium text-lg">
             ZipAuto
-            <span>
+            <span className="ml-2 text-sm text-gray-600">
               <i className="ri-user-3-fill"></i> 3
             </span>
           </h4>

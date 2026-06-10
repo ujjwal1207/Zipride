@@ -60,18 +60,14 @@ function CaptainSignup() {
   return (
     <div className="p-7 h-screen flex flex-col justify-between">
       <div>
-        <img
-          className="w-16 mb-10"
-          src="/zipride captain.png"
-          alt=""
-        />
+        <img className="w-20 mb-8" src="/zipride captain.png" alt="Zipride Captain" />
 
         {step === 'details' ? (
           <form onSubmit={handleDetailsSubmit}>
-            <h3 className="text-base font-medium mb-2"> Whats Your Name</h3>
+            <h3 className="text-base font-medium mb-2">What's Your Name</h3>
             <div className="flex gap-4 mb-4">
               <input
-                className="bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border  text-lg placeholder:text-base"
+                className="bg-gray-100 w-1/2 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={firstname}
                 onChange={(e) => setFirstname(e.target.value)}
                 required
@@ -79,7 +75,7 @@ function CaptainSignup() {
                 placeholder="first name"
               />
               <input
-                className="bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border  text-lg placeholder:text-base"
+                className="bg-gray-100 w-1/2 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={lastname}
                 onChange={(e) => setLastname(e.target.value)}
                 required
@@ -92,13 +88,13 @@ function CaptainSignup() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
+              className="bg-gray-100 mb-6 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
               type="email"
               placeholder="email@example.com"
             />
             <h3 className="text-base font-medium mb-2">Enter Password</h3>
             <input
-              className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
+              className="bg-gray-100 mb-6 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -108,7 +104,7 @@ function CaptainSignup() {
             <h3 className="text-base font-medium mb-2">Vehicle Details</h3>
             <div className="flex gap-4 mb-4">
               <input
-                className="bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border text-lg placeholder:text-base"
+                className="bg-gray-100 w-1/2 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={vehiclecolor}
                 onChange={(e) => setVehicleColor(e.target.value)}
                 required
@@ -116,7 +112,7 @@ function CaptainSignup() {
                 placeholder="Vehicle Colour"
               />
               <select
-                className="bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border text-lg placeholder:text-base"
+                className="bg-gray-100 w-1/2 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={vehicletype}
                 onChange={(e) => setVehicleType(e.target.value)}
                 required
@@ -129,7 +125,7 @@ function CaptainSignup() {
             </div>
             <div className="flex gap-4 mb-4">
               <input
-                className="bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border text-lg placeholder:text-base"
+                className="bg-gray-100 w-1/2 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={vehiclecap}
                 onChange={(e) => setVehiclecap(e.target.value)}
                 required
@@ -138,7 +134,7 @@ function CaptainSignup() {
                 placeholder="Vehicle Capacity"
               />
               <input
-                className="bg-[#eeeeee] w-1/2 rounded-lg px-4 py-2 border text-lg placeholder:text-base"
+                className="bg-gray-100 w-1/2 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={vehiclenumber}
                 onChange={(e) => setVehicleNumber(e.target.value)}
                 required
@@ -146,8 +142,10 @@ function CaptainSignup() {
                 placeholder="Vehicle Number"
               />
             </div>
-            {message && <p className="text-center text-sm mb-3">{message}</p>}
-            <button type="submit" className="bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg placeholder:text-base">
+            {message && (
+              <p className="text-center text-sm mb-3 bg-gray-100 text-gray-700 rounded-lg py-2 px-3">{message}</p>
+            )}
+            <button type="submit" className="bg-black text-white font-semibold mb-3 rounded-xl px-4 py-3 w-full text-base hover:bg-gray-800 transition-colors">
               Create Captain Account
             </button>
           </form>
@@ -156,28 +154,30 @@ function CaptainSignup() {
             <h3 className="text-base font-medium mb-2">Verify Your Email</h3>
             <p className="text-sm text-gray-600 mb-4">An OTP has been sent to {email}.</p>
             <input
-              className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-lg placeholder:text-base"
+              className="bg-gray-100 mb-6 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-green-500 transition"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required
               type="text"
               placeholder="Enter 6-digit OTP"
             />
-            {message && <p className="text-center text-sm mb-3">{message}</p>}
-            <button type="submit" className="bg-green-600 text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-lg">
+            {message && (
+              <p className="text-center text-sm mb-3 bg-gray-100 text-gray-700 rounded-lg py-2 px-3">{message}</p>
+            )}
+            <button type="submit" className="bg-green-600 text-white font-semibold mb-3 rounded-xl px-4 py-3 w-full text-base hover:bg-green-700 transition-colors">
               Verify & Sign Up
             </button>
           </form>
         )}
-        <p className="text-center">
+        <p className="text-center text-gray-600">
           Already a rider?{" "}
-          <Link to="/captain-login" className="text-blue-600">
+          <Link to="/captain-login" className="text-black font-medium hover:underline">
             Sign in as Captain
           </Link>
         </p>
       </div>
       <div>
-        <p className="text-[10px] leading-tight">
+        <p className="text-[10px] leading-tight text-gray-500">
           This site is protected by reCAPTCHA and the{" "}
           <span className="underline">Google Privacy Policy</span> and{" "}
           <span className="underline">Terms of Service apply</span>.

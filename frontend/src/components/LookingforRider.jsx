@@ -12,6 +12,13 @@ function LookingforRider(props) {
     props.Destination
   );
 
+  const vehicleImages = {
+    car: `${import.meta.env.VITE_BASE}/uploads/car.webp`,
+    bike: `${import.meta.env.VITE_BASE}/uploads/bike.webp`,
+    auto: `${import.meta.env.VITE_BASE}/uploads/auto.webp`,
+  };
+  const vehicleImageSrc = vehicleImages[props.vehicleType] || vehicleImages.car;
+
   return (
     <div>
       <h3 className="text-center text-2xl font-semibold mb-5">
@@ -20,7 +27,7 @@ function LookingforRider(props) {
       <div className="flex gap-2 justify-between items-center flex-col">
         <img
           className="h-20"
-          src="https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_638,w_851/v1707429809/assets/2a/9fe873-1f16-4c89-ba41-2712211380a9/original/UberBlack.png"
+          src={vehicleImageSrc}
           alt=""
         />
         <div className="w-full mt-5">

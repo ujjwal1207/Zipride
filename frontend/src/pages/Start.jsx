@@ -11,6 +11,7 @@ import axios from "axios";
 import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/usercontext";
 import { useNavigate } from "react-router-dom";
+import LiveTracking from "../components/LiveTracking";
 
 function Start() {
   const panelRef = useRef(null);
@@ -48,18 +49,30 @@ function Start() {
     }
   }, [user]);
 
-  socket.on("ride-confirmed", (ride) => {
-    setWaitingforRiderPanel(true);
-    setConfirmRidePanel(false);
-    setLookingforRiderPanel(false);
-    setride(ride);
-  });
+  useEffect(() => {
+    if (!socket) return;
 
-  socket.on("ride-started", (ride) => {
-    setWaitingforRiderPanel(false);
-    setLookingforRiderPanel(false);
-    navigate("/riding", { state: { ride: ride } });
-  });
+    const handleRideConfirmed = (ride) => {
+      setWaitingforRiderPanel(true);
+      setConfirmRidePanel(false);
+      setLookingforRiderPanel(false);
+      setride(ride);
+    };
+
+    const handleRideStarted = (ride) => {
+      setWaitingforRiderPanel(false);
+      setLookingforRiderPanel(false);
+      navigate("/riding", { state: { ride } });
+    };
+
+    socket.on("ride-confirmed", handleRideConfirmed);
+    socket.on("ride-started", handleRideStarted);
+
+    return () => {
+      socket.off("ride-confirmed", handleRideConfirmed);
+      socket.off("ride-started", handleRideStarted);
+    };
+  }, [socket, navigate]);
 
   const handlePickupChange = async (e) => {
     setPickup(e.target.value);
@@ -211,31 +224,31 @@ function Start() {
       )}
 
       <div className="h-screen w-screen">
-        <img
-          className="h-full w-full object-cover"
-          src="https://i0.wp.com/www.medianama.com/wp-content/uploads/2018/06/Screenshot_20180619-112715.png.png?fit=493%2C383&ssl=1"
-          alt="Map"
+        <LiveTracking
+          pickup={Pickup}
+          destination={Destination}
+          authToken={localStorage.getItem("token")}
         />
       </div>
 
-      <div className="flex flex-col justify-end h-screen w-full top-0 absolute">
-        <div className="relative h-[30%] bg-white p-5">
+      <div className="flex flex-col justify-end h-screen w-full top-0 absolute pointer-events-none">
+        <div className="relative bg-white rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] p-6 pb-7 pointer-events-auto">
           <h5
             ref={panelCloseRef}
             onClick={() => setpanel(false)}
-            className="absolute top-6 right-6 w-4"
+            className="absolute top-6 right-6 w-5 opacity-0 cursor-pointer"
           >
             <img
               src="https://www.iconpacks.net/icons/2/free-arrow-down-icon-3101-thumb.png"
               alt="Close Panel"
             />
           </h5>
-          <h4 className="text-2xl font-semibold">Find a trip</h4>
-          <form onSubmit={Submithandler}>
-            <div className="line absolute h-16 w-1 top-[56%] -translate-y-1/2 left-10 bg-gray-700 rounded-full"></div>
+          <h4 className="text-2xl font-semibold mb-4">Find a trip</h4>
+          <form onSubmit={Submithandler} className="relative">
+            <div className="line absolute h-14 w-1 top-1/2 -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
 
             <input
-              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
+              className="bg-gray-100 px-12 py-3 text-base rounded-xl w-full"
               type="text"
               placeholder="Add Pickup location"
               value={Pickup}
@@ -247,7 +260,7 @@ function Start() {
             />
 
             <input
-              className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-3"
+              className="bg-gray-100 px-12 py-3 text-base rounded-xl w-full mt-3"
               type="text"
               placeholder="Add Destination"
               value={Destination}
@@ -260,13 +273,13 @@ function Start() {
           </form>
           <button
             onClick={findtrip}
-            className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full cursor-pointer hover:bg-gray-800 transition-colors duration-300"
+            className="bg-black text-white text-lg font-medium px-4 py-3 rounded-xl mt-4 w-full cursor-pointer hover:bg-gray-800 transition-colors duration-300"
           >
             Find my ride
           </button>
         </div>
 
-        <div ref={panelRef} className="bg-white h-0">
+        <div ref={panelRef} className="bg-white h-0 overflow-hidden pointer-events-auto">
           <LocationSearchPanel
             suggestions={
               activeField === "pickup"
@@ -284,7 +297,7 @@ function Start() {
 
       <div
         ref={vehiclepanelopenref}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
+        className="fixed w-full z-30 bottom-0 translate-y-full bg-white rounded-t-3xl shadow-[0_-4px_24px_rgba(0,0,0,0.2)] px-5 pt-8 pb-8"
       >
         <VehiclePanel
           selectVehicleType={setVehicleType}
@@ -298,7 +311,7 @@ function Start() {
 
       <div
         ref={ConfirmRidePanelref}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+        className="fixed w-full z-30 bottom-0 translate-y-full bg-white rounded-t-3xl shadow-[0_-4px_24px_rgba(0,0,0,0.2)] px-5 pt-8 pb-8"
       >
         <ConfirmRide
           fare={fare}
@@ -313,7 +326,7 @@ function Start() {
 
       <div
         ref={LookingforRiderPanelref}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+        className="fixed w-full z-30 bottom-0 translate-y-full bg-white rounded-t-3xl shadow-[0_-4px_24px_rgba(0,0,0,0.2)] px-5 pt-8 pb-8"
       >
         <LookingforRider
           CreateRide={CreateRide}
@@ -329,7 +342,7 @@ function Start() {
 
       <div
         ref={WaitingforRiderPanelref}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12"
+        className="fixed w-full z-30 bottom-0 translate-y-full bg-white rounded-t-3xl shadow-[0_-4px_24px_rgba(0,0,0,0.2)] px-5 pt-8 pb-8"
       >
         <WaitingforRider
           ride={ride}

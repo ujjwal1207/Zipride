@@ -62,11 +62,7 @@ const UserLogin = () => {
   return (
     <div className="p-7 h-screen flex flex-col justify-between">
       <div>
-        <img
-          className="w-22 mb-10"
-          src="/zipride user.png"
-          alt=""
-        />
+        <img className="w-24 mb-10" src="/zipride user.png" alt="Zipride" />
 
         <form onSubmit={submitHandler}>
           <h3 className="text-base font-medium mb-2">What's your email</h3>
@@ -74,7 +70,7 @@ const UserLogin = () => {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-[#eeeeee] mb-7 rounded-lg px-4 py-2 border w-full text-base placeholder:text-base"
+            className="bg-gray-100 mb-6 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
             type="email"
             placeholder="email@example.com"
           />
@@ -83,7 +79,7 @@ const UserLogin = () => {
             <div>
               <h3 className="text-base font-medium mb-2">Enter Password</h3>
               <input
-                className="bg-[#eeeeee] rounded-lg px-4 py-2 border w-full text-base placeholder:text-base"
+                className="bg-gray-100 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -91,47 +87,58 @@ const UserLogin = () => {
                 placeholder="password"
               />
               <div className="text-right mt-2 mb-4">
-                  <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
-                      Forgot Password?
-                  </Link>
+                <Link to="/forgot-password" className="text-sm text-gray-600 hover:text-black hover:underline">
+                  Forgot Password?
+                </Link>
               </div>
             </div>
           ) : (
             <div>
               <h3 className="text-base font-medium mb-2">Enter OTP</h3>
-              <div className="flex items-center gap-2 mb-7">
+              <div className="flex items-center gap-2 mb-6">
                 <input
-                  className="bg-[#eeeeee] rounded-lg px-4 py-2 border w-full text-base placeholder:text-base"
+                  className="bg-gray-100 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 focus:ring-gray-900 transition"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   required
                   type="text"
                   placeholder="6-digit OTP"
                 />
-                <button type="button" onClick={handleSendOtp} className="bg-gray-200 text-black font-semibold rounded-lg px-4 py-2 whitespace-nowrap">
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  className="bg-gray-200 text-black font-semibold rounded-xl px-4 py-3 whitespace-nowrap hover:bg-gray-300 transition-colors"
+                >
                   Send OTP
                 </button>
               </div>
             </div>
           )}
 
-          {message && <p className="text-center text-sm mb-3">{message}</p>}
+          {message && (
+            <p className="text-center text-sm mb-3 bg-gray-100 text-gray-700 rounded-lg py-2 px-3">
+              {message}
+            </p>
+          )}
 
-          <button type="submit" className="bg-[#111] text-white font-semibold mb-3 rounded-lg px-4 py-2 w-full text-base placeholder:text-base">
+          <button
+            type="submit"
+            className="bg-black text-white font-semibold mb-3 rounded-xl px-4 py-3 w-full text-base hover:bg-gray-800 transition-colors"
+          >
             Login
           </button>
         </form>
 
         <button
           onClick={() => setLoginMethod(loginMethod === 'password' ? 'otp' : 'password')}
-          className="text-center w-full text-blue-600 mt-2"
+          className="text-center w-full text-gray-700 font-medium mt-2 hover:text-black transition-colors"
         >
           {loginMethod === 'password' ? 'Login with OTP' : 'Login with Password'}
         </button>
 
-        <p className="text-center mt-4">
+        <p className="text-center mt-4 text-gray-600">
           New here?{" "}
-          <Link to="/signup" className="text-blue-600">
+          <Link to="/signup" className="text-black font-medium hover:underline">
             Create new Account
           </Link>
         </p>
@@ -139,17 +146,15 @@ const UserLogin = () => {
       <div>
         <Link
           to="/captain-login"
-          className="bg-[#10b461] flex items-center justify-center text-white font-semibold mb-5 rounded-lg px-4 py-2 w-full text-base placeholder:text-base"
+          className="bg-green-600 flex items-center justify-center text-white font-semibold mb-5 rounded-xl px-4 py-3 w-full text-base hover:bg-green-700 transition-colors"
         >
           Sign in as Captain
         </Link>
-        <div>
-          <p className="text-[10px] leading-tight">
-            This site is protected by reCAPTCHA and the{" "}
-            <span className="underline">Google Privacy Policy</span> and{" "}
-            <span className="underline">Terms of Service apply</span>.
-          </p>
-        </div>
+        <p className="text-[10px] leading-tight text-gray-500">
+          This site is protected by reCAPTCHA and the{" "}
+          <span className="underline">Google Privacy Policy</span> and{" "}
+          <span className="underline">Terms of Service apply</span>.
+        </p>
       </div>
     </div>
   );

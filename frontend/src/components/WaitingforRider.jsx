@@ -22,20 +22,23 @@ function WaitingforRider(props) {
         <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
       </h5>
       <div className="flex items-center justify-between">
-        <img
-          className="h-12"
-          src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
-          alt=""
-        />
+        <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
+          <i className="ri-taxi-line text-3xl text-gray-700"></i>
+        </div>
         <div className="text-right">
           <h2 className="text-lg font-medium capitalize">
-            {props.ride?.captain.fullname.firstname}
+            {props.ride?.captain?.fullname?.firstname}
           </h2>
           <h4 className="text-xl font-semibold -mt-1 -mb-1">
-            {props.ride?.captain.vehicle.number}
+            {props.ride?.captain?.vehicle?.number}
           </h4>
-          <p className="text-sm text-gray-600">Maruti Suzuki Alto</p>
-          <h1 className="text-lg font-semibold"> {props.ride?.otp} </h1>
+          <p className="text-sm text-gray-600 capitalize">
+            {[props.ride?.captain?.vehicle?.color, props.ride?.captain?.vehicle?.type]
+              .filter(Boolean)
+              .join(" ") || "Vehicle"}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">OTP</p>
+          <h1 className="text-lg font-semibold">{props.ride?.otp}</h1>
         </div>
       </div>
 

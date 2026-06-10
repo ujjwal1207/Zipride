@@ -23,7 +23,11 @@ const Riding = () => {
         <i className="text-lg font-medium ri-home-5-line"></i>
       </Link>
       <div className="h-1/2">
-        <LiveTracking pickup={ride?.pickup} destination={ride?.destination} />
+        <LiveTracking
+          pickup={ride?.pickup}
+          destination={ride?.destination}
+          authToken={localStorage.getItem("token")}
+        />
       </div>
       <div className="h-1/2 p-4">
         <div className="flex items-center justify-between">
@@ -37,9 +41,13 @@ const Riding = () => {
               {ride?.captain.fullname.firstname}
             </h2>
             <h4 className="text-xl font-semibold -mt-1 -mb-1">
-              {ride?.captain.vehicle.plate}
+              {ride?.captain?.vehicle?.plate || ride?.captain?.vehicle?.number}
             </h4>
-            <p className="text-sm text-gray-600">Maruti Suzuki Alto</p>
+            <p className="text-sm text-gray-600 capitalize">
+              {[ride?.captain?.vehicle?.color, ride?.captain?.vehicle?.type]
+                .filter(Boolean)
+                .join(" ") || "Vehicle"}
+            </p>
           </div>
         </div>
 
@@ -48,7 +56,7 @@ const Riding = () => {
             <div className="flex items-center gap-5 p-3 border-b-2">
               <i className="text-lg ri-map-pin-2-fill"></i>
               <div>
-                <h3 className="text-lg font-medium">562/11-A</h3>
+                <h3 className="text-lg font-medium">Drop-off</h3>
                 <p className="text-sm -mt-1 text-gray-600">
                   {ride?.destination}
                 </p>
@@ -58,7 +66,7 @@ const Riding = () => {
               <i className="ri-currency-line"></i>
               <div>
                 <h3 className="text-lg font-medium">₹{ride?.fare} </h3>
-                <p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
+                <p className="text-sm -mt-1 text-gray-600">Cash / Online</p>
               </div>
             </div>
           </div>

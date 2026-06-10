@@ -8,15 +8,17 @@ import { SocketContext } from "../context/SocketContext";
 import axios from "axios";
 import CaptainDetails from "../components/CaptainDetails";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
-import LiveTracking from "../components/LiveTracking"; // Import LiveTracking
+import LiveTracking from "../components/LiveTracking";
 
 function CaptainStart() {
-  const [ridePopuPanel, setRidePopupPanel] = useState(false);
-  const [ConfirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
+  const [ridePopupPanel, setRidePopupPanel] = useState(false);
+  const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
   const [ride, setRide] = useState(null);
-  const [distanceToPickup, setDistanceToPickup] = useState(null); // State for distance
+  const [distanceToPickup, setDistanceToPickup] = useState(null);
+
   const ridePopupPanelRef = useRef(null);
-  const ConfirmRidePopupPanelRef = useRef(null);
+  const confirmRidePopupPanelRef = useRef(null);
+
   const { socket } = useContext(SocketContext);
   const { captain } = useContext(CaptainDataContext);
 
@@ -42,112 +44,119 @@ function CaptainStart() {
     const locationInterval = setInterval(updateLocation, 10000);
     updateLocation();
 
-    socket.on("new-ride", (data) => {
+    const handleNewRide = (data) => {
       setRide(data);
+      setDistanceToPickup(null);
+      // A new ride request only ever opens the accept/ignore popup.
+      setConfirmRidePopupPanel(false);
       setRidePopupPanel(true);
-    });
+    };
+
+    socket.on("new-ride", handleNewRide);
 
     return () => {
       clearInterval(locationInterval);
-      socket.off("new-ride");
+      socket.off("new-ride", handleNewRide);
     };
   }, [socket, captain]);
 
+  // Captain accepted the ride: confirm with the backend, and only then
+  // move from the accept/ignore popup to the OTP (confirm) panel.
   async function confirmRide() {
     if (!ride || !captain?._id) {
       console.error("Ride or captain data is missing");
       return;
     }
-    await axios.post(
-      `${import.meta.env.VITE_BASE}/rides/confirm`,
-      { rideId: ride._id },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
-        },
-      }
-    );
-    setRidePopupPanel(false);
-    setConfirmRidePopupPanel(true);
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_BASE}/rides/confirm`,
+        { rideId: ride._id },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+          },
+        }
+      );
+      setRidePopupPanel(false);
+      setConfirmRidePopupPanel(true);
+    } catch (error) {
+      console.error("Error confirming ride:", error);
+      alert("Could not accept the ride. It may have been taken already.");
+      setRidePopupPanel(false);
+    }
   }
-  
+
   useGSAP(() => {
     gsap.to(ridePopupPanelRef.current, {
-      transform: ridePopuPanel ? "translateY(0)" : "translateY(100%)",
+      transform: ridePopupPanel ? "translateY(0)" : "translateY(100%)",
     });
-  }, [ridePopuPanel]);
+  }, [ridePopupPanel]);
 
   useGSAP(() => {
-    gsap.to(ConfirmRidePopupPanelRef.current, {
-      transform: ConfirmRidePopupPanel ? "translateY(0)" : "translateY(100%)",
+    gsap.to(confirmRidePopupPanelRef.current, {
+      transform: confirmRidePopupPanel ? "translateY(0)" : "translateY(100%)",
     });
-  }, [ConfirmRidePopupPanel]);
+  }, [confirmRidePopupPanel]);
 
   return (
-    <div className="h-screen">
-      {/* Hidden LiveTracking to get distance for the popup */}
-      {ride && (ridePopuPanel || ConfirmRidePopupPanel) && (
-          <div style={{ display: 'none' }}>
-              <LiveTracking 
-                pickup={ride.pickup} 
-                destination={ride.destination}
-                onDistanceToPickupChange={setDistanceToPickup}
-              />
-          </div>
-      )}
-
-      <div className="fixed p-6 top-0 flex items-center justify-between w-screen">
-        <img
-          className="w-16"
-          src="/zipride captain.png"
-          alt=""
+    <div className="h-screen relative overflow-hidden">
+      {/* Live map background */}
+      <div className="absolute inset-0 z-0">
+        <LiveTracking
+          pickup={ride?.pickup}
+          destination={ride?.destination}
+          onDistanceToPickupChange={setDistanceToPickup}
+          authToken={localStorage.getItem("captaintoken")}
         />
-        <div className="flex items-center gap-2">
+      </div>
+
+      {/* Top bar */}
+      <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between p-5">
+        <img className="w-16 drop-shadow-md" src="/zipride captain.png" alt="Zipride" />
+        <div className="flex items-center gap-3">
           <Link
             to="/captain-profile"
-            className="h-10 w-10 bg-white flex items-center justify-center rounded-full"
+            className="h-11 w-11 bg-white shadow-md flex items-center justify-center rounded-full"
           >
-            <i className="text-lg font-medium ri-user-line"></i>
+            <i className="text-xl text-gray-700 ri-user-line"></i>
           </Link>
           <Link
             to="/captain-login"
-            className="h-10 w-10 bg-white flex items-center justify-center rounded-full"
+            className="h-11 w-11 bg-white shadow-md flex items-center justify-center rounded-full"
           >
-            <i className="text-lg font-medium ri-logout-box-r-line"></i>
+            <i className="text-xl text-gray-700 ri-logout-box-r-line"></i>
           </Link>
         </div>
       </div>
-      <div className="h-3/5">
-        <img
-          className="h-full w-full object-cover"
-          src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-          alt=""
-        />
-      </div>
-      <div className="h-2/5 p-6">
+
+      {/* Captain details card overlaying the bottom of the map */}
+      <div className="fixed bottom-0 left-0 right-0 z-10 bg-white rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] p-6">
         <CaptainDetails />
       </div>
+
+      {/* Accept / ignore popup */}
       <div
         ref={ridePopupPanelRef}
-        className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
+        className="fixed left-0 right-0 z-30 bottom-0 translate-y-full bg-white rounded-t-3xl shadow-[0_-4px_24px_rgba(0,0,0,0.2)] px-5 pt-8 pb-8"
       >
         <RidePopUp
           ride={ride}
           setRidePopupPanel={setRidePopupPanel}
-          setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           confirmRide={confirmRide}
-          distance={distanceToPickup} // Pass distance to RidePopUp
+          distance={distanceToPickup}
         />
       </div>
+
+      {/* OTP / confirm panel (only after the captain accepts) */}
       <div
-        ref={ConfirmRidePopupPanelRef}
-        className="fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12"
+        ref={confirmRidePopupPanelRef}
+        className="fixed left-0 right-0 h-screen z-40 bottom-0 translate-y-full bg-white rounded-t-3xl shadow-[0_-4px_24px_rgba(0,0,0,0.2)] px-5 pt-10 pb-8"
       >
         <ConfirmRidePopUp
           ride={ride}
           setConfirmRidePopupPanel={setConfirmRidePopupPanel}
           setRidePopupPanel={setRidePopupPanel}
-          distance={distanceToPickup} // Pass distance to ConfirmRidePopUp
+          distance={distanceToPickup}
         />
       </div>
     </div>

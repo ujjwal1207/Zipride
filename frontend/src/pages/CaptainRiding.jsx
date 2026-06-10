@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useRef, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FinishRide from "../components/FinishRide";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -11,7 +11,18 @@ const CaptainRiding = () => {
   const [distance, setDistance] = useState(null);
   const finishRidePanelRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const rideData = location.state?.ride;
+
+  // This page needs an active ride passed via navigation state. If it's
+  // opened directly (no ride), send the captain back to the dashboard.
+  useEffect(() => {
+    if (!rideData) {
+      navigate("/captain-start", { replace: true });
+    }
+  }, [rideData, navigate]);
+
+  if (!rideData) return null;
 
   useGSAP(
     function () {
@@ -36,6 +47,7 @@ const CaptainRiding = () => {
           pickup={rideData?.pickup}
           destination={rideData?.destination}
           onDistanceChange={setDistance} // Pass the callback to update distance to destination
+          authToken={localStorage.getItem("captaintoken")}
         />
       </div>
 

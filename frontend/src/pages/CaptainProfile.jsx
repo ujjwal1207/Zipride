@@ -3,6 +3,16 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { CaptainDataContext } from "../context/CaptainContext";
 
+const FALLBACK_AVATAR =
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s";
+
+// Resolve a stored profile-picture path (which may be relative) to a full URL.
+const resolveAvatar = (pic) => {
+  if (!pic) return FALLBACK_AVATAR;
+  if (pic.startsWith("http") || pic.startsWith("blob:")) return pic;
+  return `${import.meta.env.VITE_BASE}${pic}`;
+};
+
 function CaptainProfile() {
   const { captain, setCaptain } = useContext(CaptainDataContext);
   const [captainDetails, setCaptainDetails] = useState({
@@ -21,17 +31,14 @@ function CaptainProfile() {
     newPassword: "",
   });
   const [profilePicture, setProfilePicture] = useState(null);
-  const [preview, setPreview] = useState(
-    captain?.profilePicture ||
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s"
-  );
+  const [preview, setPreview] = useState(resolveAvatar(captain?.profilePicture));
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (captain?.profilePicture) {
-      setPreview(captain.profilePicture);
+      setPreview(resolveAvatar(captain.profilePicture));
     }
   }, [captain]);
 
@@ -68,11 +75,15 @@ function CaptainProfile() {
   const handleCaptainSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(`${import.meta.env.VITE_BASE}/captains/details`, captainDetails, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
-        },
-      });
+      const response = await axios.patch(
+        `${import.meta.env.VITE_BASE}/captains/details`,
+        captainDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+          },
+        }
+      );
       setCaptain(response.data.captain);
       setMessage("Captain details updated successfully!");
       setError("");
@@ -86,11 +97,15 @@ function CaptainProfile() {
   const handleVehicleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.patch(`${import.meta.env.VITE_BASE}/captains/vehicle`, vehicleDetails, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
-        },
-      });
+      const response = await axios.patch(
+        `${import.meta.env.VITE_BASE}/captains/vehicle`,
+        vehicleDetails,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("captaintoken")}`,
+          },
+        }
+      );
       setCaptain(response.data.captain);
       setMessage("Vehicle details updated successfully!");
       setError("");
@@ -133,7 +148,7 @@ function CaptainProfile() {
 
     try {
       const response = await axios.post(
-       `${import.meta.env.VITE_BASE}/captains/profile-picture`,
+        `${import.meta.env.VITE_BASE}/captains/profile-picture`,
         formData,
         {
           headers: {
@@ -143,6 +158,7 @@ function CaptainProfile() {
         }
       );
       setCaptain(response.data.captain);
+      setProfilePicture(null);
       setMessage("Profile picture updated!");
       setError("");
     } catch (err) {
@@ -151,241 +167,228 @@ function CaptainProfile() {
     }
   };
 
+  const fullName = `${captainDetails.firstname} ${captainDetails.lastname}`.trim();
+
+  const inputBase =
+    "mt-1 bg-gray-100 rounded-xl px-4 py-3 w-full text-base focus:outline-none focus:ring-2 transition";
+
   return (
-    <div className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="relative mb-8 text-center">
-          <Link
-            to="/captain-start"
-            className="absolute top-0 left-0 flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+    <div className="min-h-screen bg-gray-100 pb-12">
+      {/* Floating toast */}
+      {(message || error) && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-md">
+          <div
+            className={`px-4 py-3 rounded-xl shadow-lg text-center text-sm font-medium ${
+              message ? "bg-green-600 text-white" : "bg-red-600 text-white"
+            }`}
           >
-            <i className="ri-arrow-left-s-line text-2xl"></i>
-            <span>Back to Dashboard</span>
-          </Link>
-          <h2 className="text-3xl font-bold text-gray-800">Manage Profile</h2>
+            {message || error}
+          </div>
+        </div>
+      )}
+
+      {/* Gradient header */}
+      <div className="bg-gradient-to-br from-gray-900 to-gray-700 h-44 relative">
+        <Link
+          to="/captain-start"
+          className="absolute top-5 left-5 flex items-center gap-1 text-white/90 hover:text-white transition-colors"
+        >
+          <i className="ri-arrow-left-s-line text-2xl"></i>
+          <span className="text-sm font-medium">Back to Dashboard</span>
+        </Link>
+        <h2 className="absolute top-6 left-1/2 -translate-x-1/2 text-xl font-semibold text-white">
+          Manage Profile
+        </h2>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 -mt-16">
+        {/* Avatar card */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col items-center text-center">
+          <div className="relative">
+            <img
+              src={preview}
+              alt="Profile"
+              className="w-28 h-28 rounded-full object-cover ring-4 ring-white shadow-md"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className="absolute bottom-1 right-1 h-9 w-9 rounded-full bg-black text-white flex items-center justify-center shadow-md hover:bg-gray-800 transition-colors"
+              title="Change photo"
+            >
+              <i className="ri-camera-line"></i>
+            </button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handlePictureChange}
+              className="hidden"
+              accept="image/*"
+            />
+          </div>
+          <h3 className="mt-4 text-xl font-semibold text-gray-800">
+            {fullName || "Captain"}
+          </h3>
+          <p className="text-gray-500 text-sm">{captainDetails.email}</p>
+
+          {profilePicture && (
+            <button
+              onClick={handlePictureSubmit}
+              className="mt-4 bg-black text-white font-medium rounded-xl px-6 py-2 text-sm hover:bg-gray-800 transition-colors"
+            >
+              Save new photo
+            </button>
+          )}
         </div>
 
-        {message && (
-          <div
-            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6 text-center"
-            role="alert"
-          >
-            <span className="block sm:inline">{message}</span>
-          </div>
-        )}
-        {error && (
-          <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 text-center"
-            role="alert"
-          >
-            <span className="block sm:inline">{error}</span>
-          </div>
-        )}
-
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Captain Details Form */}
-          <div className="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
-            <div className="flex items-center mb-6">
-              <img
-                className="h-16 w-16 rounded-full object-cover mr-4"
-                src={preview}
-                alt="Profile"
-              />
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800">
-                  {captain?.fullname?.firstname} {captain?.fullname?.lastname}
-                </h3>
-                <p className="text-gray-500">{captain?.email}</p>
-              </div>
+        <div className="grid lg:grid-cols-3 gap-6 mt-6">
+          {/* Personal details */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <i className="ri-user-line text-xl text-gray-700"></i>
+              <h3 className="text-lg font-semibold text-gray-800">Personal Details</h3>
             </div>
-
-            <form onSubmit={handlePictureSubmit} className="mb-6">
-              <label className="text-sm font-medium text-gray-600">
-                Update Profile Picture
-              </label>
-              <div className="mt-1 flex items-center gap-4">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handlePictureChange}
-                  className="hidden"
-                  accept="image/*"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current.click()}
-                  className="flex-grow bg-gray-200 text-gray-700 font-semibold rounded-lg px-4 py-2 hover:bg-gray-300 text-sm"
-                >
-                  Choose Image
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white font-semibold rounded-lg px-4 py-2 hover:bg-blue-600 text-sm"
-                >
-                  Upload
-                </button>
-              </div>
-            </form>
-            <hr className="my-6" />
-
             <form onSubmit={handleCaptainSubmit} className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">
-                  First Name
-                </label>
+                <label className="text-sm font-medium text-gray-600">First Name</label>
                 <input
                   type="text"
                   name="firstname"
                   value={captainDetails.firstname}
                   onChange={handleCaptainChange}
-                  className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`${inputBase} focus:ring-gray-900`}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Last Name
-                </label>
+                <label className="text-sm font-medium text-gray-600">Last Name</label>
                 <input
                   type="text"
                   name="lastname"
                   value={captainDetails.lastname}
                   onChange={handleCaptainChange}
-                  className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`${inputBase} focus:ring-gray-900`}
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">
-                  Email
-                </label>
+                <label className="text-sm font-medium text-gray-600">Email</label>
                 <input
                   type="email"
                   name="email"
                   value={captainDetails.email}
                   onChange={handleCaptainChange}
-                  className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`${inputBase} focus:ring-gray-900`}
                 />
               </div>
               <button
                 type="submit"
-                className="w-full bg-blue-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-blue-700 transition-colors"
+                className="w-full bg-black text-white font-semibold rounded-xl px-4 py-3 text-base hover:bg-gray-800 transition-colors"
               >
                 Update Personal Details
               </button>
             </form>
           </div>
 
-          {/* Vehicle and Password Forms */}
-          <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">
-                Vehicle Details
-              </h3>
-              <form onSubmit={handleVehicleSubmit} className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Color
-                  </label>
-                  <input
-                    type="text"
-                    name="color"
-                    value={vehicleDetails.color}
-                    onChange={handleVehicleChange}
-                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Number
-                  </label>
-                  <input
-                    type="text"
-                    name="number"
-                    value={vehicleDetails.number}
-                    onChange={handleVehicleChange}
-                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Capacity
-                  </label>
-                  <input
-                    type="number"
-                    name="capacity"
-                    value={vehicleDetails.capacity}
-                    onChange={handleVehicleChange}
-                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Type
-                  </label>
-                  <select
-                    name="type"
-                    value={vehicleDetails.type}
-                    onChange={handleVehicleChange}
-                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    <option value="car">Car</option>
-                    <option value="bike">Bike</option>
-                    <option value="auto">Auto</option>
-                  </select>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-green-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-green-700 transition-colors"
-                >
-                  Update Vehicle Details
-                </button>
-              </form>
+          {/* Vehicle details */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <i className="ri-car-line text-xl text-gray-700"></i>
+              <h3 className="text-lg font-semibold text-gray-800">Vehicle Details</h3>
             </div>
+            <form onSubmit={handleVehicleSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">Color</label>
+                <input
+                  type="text"
+                  name="color"
+                  value={vehicleDetails.color}
+                  onChange={handleVehicleChange}
+                  className={`${inputBase} focus:ring-green-500`}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Number</label>
+                <input
+                  type="text"
+                  name="number"
+                  value={vehicleDetails.number}
+                  onChange={handleVehicleChange}
+                  className={`${inputBase} focus:ring-green-500`}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Capacity</label>
+                <input
+                  type="number"
+                  name="capacity"
+                  value={vehicleDetails.capacity}
+                  onChange={handleVehicleChange}
+                  className={`${inputBase} focus:ring-green-500`}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Type</label>
+                <select
+                  name="type"
+                  value={vehicleDetails.type}
+                  onChange={handleVehicleChange}
+                  className={`${inputBase} focus:ring-green-500`}
+                >
+                  <option value="car">Car</option>
+                  <option value="bike">Bike</option>
+                  <option value="auto">Auto</option>
+                </select>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-green-600 text-white font-semibold rounded-xl px-4 py-3 text-base hover:bg-green-700 transition-colors"
+              >
+                Update Vehicle Details
+              </button>
+            </form>
+          </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">
-                Change Password
-              </h3>
-              <form onSubmit={handlePasswordSubmit} className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    Old Password
-                  </label>
-                  <input
-                    type="password"
-                    name="oldPassword"
-                    value={passwordDetails.oldPassword}
-                    onChange={handlePasswordChange}
-                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-600">
-                    New Password
-                  </label>
-                  <input
-                    type="password"
-                    name="newPassword"
-                    value={passwordDetails.newPassword}
-                    onChange={handlePasswordChange}
-                    className="mt-1 bg-gray-100 rounded-lg px-4 py-3 border border-gray-200 w-full text-base focus:outline-none focus:ring-2 focus:ring-red-500"
-                  />
-                </div>
-                <div className="text-right">
-                  <Link
-                    to="/forgot-password-captain"
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Forgot Old Password?
-                  </Link>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-red-600 text-white font-semibold rounded-lg px-4 py-3 text-base hover:bg-red-700 transition-colors"
-                >
-                  Change Password
-                </button>
-              </form>
+          {/* Change password */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center gap-2 mb-5">
+              <i className="ri-lock-2-line text-xl text-gray-700"></i>
+              <h3 className="text-lg font-semibold text-gray-800">Change Password</h3>
             </div>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">Old Password</label>
+                <input
+                  type="password"
+                  name="oldPassword"
+                  value={passwordDetails.oldPassword}
+                  onChange={handlePasswordChange}
+                  className={`${inputBase} focus:ring-red-500`}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">New Password</label>
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={passwordDetails.newPassword}
+                  onChange={handlePasswordChange}
+                  className={`${inputBase} focus:ring-red-500`}
+                />
+              </div>
+              <div className="text-right">
+                <Link
+                  to="/forgot-password-captain"
+                  className="text-sm text-gray-600 hover:text-black hover:underline"
+                >
+                  Forgot Old Password?
+                </Link>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-red-600 text-white font-semibold rounded-xl px-4 py-3 text-base hover:bg-red-700 transition-colors"
+              >
+                Change Password
+              </button>
+            </form>
           </div>
         </div>
       </div>
